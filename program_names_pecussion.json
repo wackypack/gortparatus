@@ -1,0 +1,27 @@
+{
+    "0": {
+        "0": "Standard",
+        "16": "Power",
+        "99": "E-mu Systems '96",
+        "40": "Brush",
+        "48": "Orchestra",
+        "24": "Electronic",
+        "32": "Jazz",
+        "8": "Room",
+        "25": "TR 808",
+        "56": "SFX"
+    },
+    "11": {
+        "0": "TR-101 Drumset",
+        "1": "CR-78 Drumset",
+        "2": "TR-808 Drumset",
+        "3": "TR-909 Drumset",
+        "4": "Analog Drumset",
+        "5": "Kraftwerk Drumset",
+        "6": "Electronic Drumset",
+        "7": "TR-808 Drumset 2"
+    },
+    "12": {
+        "0": "Retro Drums"
+    }
+}

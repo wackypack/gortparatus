@@ -1,0 +1,19 @@
+{
+	"active_profile": "MP 6.1 x86",
+	"profiles": [
+		{
+			"prf_name": "MP 5.6 x64",
+			"prg_winchild": 15,
+			"bank_winchild": 17,
+			"chn_winchild": 18,
+			"comport": "COM1"
+		},
+		{
+			"prf_name": "MP 6.1 x86",
+			"prg_winchild": 12,
+			"bank_winchild": 14,
+			"chn_winchild": 15,
+			"comport": "COM1"
+		}
+	]
+}
