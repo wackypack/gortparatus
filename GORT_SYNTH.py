@@ -24,12 +24,16 @@ prgNamesMelo=json.load(open("program_names_melodic.json"))
 prgNamesPerc=json.load(open("program_names_pecussion.json"))
 
 def clearScreen():
+    # clear the terminal window
     os.system("cls" if os.name == "nt" else "clear")
 
 def padZeroes(n_str, leng):
+    # add zeroes to the beginning of a string
     return "0"*((len(n_str)*-1)+leng)+n_str
 
 def spit(two_line_output):
+    # clear the terminal window and print two lines
+    # input is formatted as a list, e.g. ["foo", "bar"]
     clearScreen()
     print(two_line_output[0]+"\n"+two_line_output[1])
 
@@ -65,6 +69,7 @@ class monOverview:
         self.screen = screen
         
     def pack(cursorPos, prgName, bnk, prg, chn):
+        # deprecated, was used for spitting into terminal but no longer used.
         if cursorPos==0:
             return prgName, "Prg >"+padZeroes(str(bnk),3)+":"+padZeroes(str(prg),3)+"  Ch  "+padZeroes(str(chn),2)
         if cursorPos==1:
@@ -73,6 +78,7 @@ class monOverview:
             return prgName, "Prg  "+padZeroes(str(bnk),3)+":"+padZeroes(str(prg),3)+"  Ch >"+padZeroes(str(chn),2)
 
     def cgramify(self, in_str):
+        # replace specific Unicode characters with picoLCD CGRAM references.
         # éóøú€
         return in_str.replace("é", "\\0").replace("ó", "\\1").replace("ø", "\\2").replace("ú", "\\3").replace("€", "\\4")
 
@@ -118,26 +124,28 @@ class monOverview:
             self.cursorMon = self.cursorPos
 
     def increment(self, mode, direction):
+        currChn = self.currentChn
+        c = self.chnList[currChn]
         if mode == "program":
             if direction == "up":
-                program = self.chnList[self.currentChn].program + 1 if self.chnList[self.currentChn].program < 127 else 0
+                program = c.program + 1 if c.program < 127 else 0
             if direction == "down":
-                program = self.chnList[self.currentChn].program - 1 if self.chnList[self.currentChn].program > 0 else 127
-            self.chnList[self.currentChn].program = program
-            self.chnList[self.currentChn].updatePrgName()
-            self.prgMon[self.currentChn] = program
-            midiout.send_message([192+self.currentChn, program, 0])
+                program = c.program - 1 if c.program > 0 else 127
+            c.program = program
+            c.updatePrgName()
+            self.prgMon[currChn] = program
+            midiout.send_message([192+currChn, program, 0])
         if mode == "bank":
             if direction == "up":
-                bank = self.chnList[self.currentChn].bankSet + 1 if self.chnList[self.currentChn].bankSet < 127 else 0
+                bank = c.bankSet + 1 if c.bankSet < 127 else 0
             if direction == "down":
-                bank = self.chnList[self.currentChn].bankSet - 1 if self.chnList[self.currentChn].bankSet > 0 else 127
-            self.chnList[self.currentChn].bank = bank
-            self.chnList[self.currentChn].bankSet = bank
-            self.chnList[self.currentChn].updatePrgName()
-            self.bankMon[self.currentChn] = bank
-            midiout.send_message([176+self.currentChn, 0, bank])
-            midiout.send_message([192+self.currentChn, self.chnList[self.currentChn].program, 0])
+                bank = c.bankSet - 1 if c.bankSet > 0 else 127
+            c.bank = bank
+            c.bankSet = bank
+            c.updatePrgName()
+            self.bankMon[currChn] = bank
+            midiout.send_message([176+currChn, 0, bank])
+            midiout.send_message([192+currChn, c.program, 0])
         self.updateAll()
 
     def monitor(self):
@@ -173,7 +181,8 @@ class monOverview:
             # alright! now. everything to make the display respond to key input
             if self.lcd.pressedKey != keyMon:
                 keyMon = self.lcd.pressedKey
-                if screen == 0:
+                if self.screen == 0:
+                    
                     # when direction UP is pressed
                     if keyMon == b"x0a":
                         # cursor is hovering over BANK no.
@@ -182,7 +191,7 @@ class monOverview:
                             i=0
                             while self.lcd.pressedKey == b"x0a":
                                 i+=1
-                                if i > 10 and i%2 == 0:
+                                if i > 6 and i%2 == 0:
                                     self.increment("bank", "up")
                                 time.sleep(0.05)
 
@@ -192,7 +201,7 @@ class monOverview:
                             i=0
                             while self.lcd.pressedKey == b"x0a":
                                 i+=1
-                                if i > 10 and i%2 == 0:
+                                if i > 6 and i%2 == 0:
                                     self.increment("program", "up")
                                 time.sleep(0.05)
 
@@ -204,7 +213,7 @@ class monOverview:
                             i=0
                             while self.lcd.pressedKey == b"x0a":
                                 i+=1
-                                if i > 10 and i%2 == 0:
+                                if i > 6 and i%2 == 0:
                                     self.currentChn = self.currentChn + 1 if self.currentChn < 15 else 0
                                     oldChn = self.currentChn
                                     self.updateAll()
@@ -217,7 +226,7 @@ class monOverview:
                             i=0
                             while self.lcd.pressedKey == b"x0b":
                                 i+=1
-                                if i > 10 and i%2 == 0:
+                                if i > 6 and i%2 == 0:
                                     self.increment("bank", "down")
                                 time.sleep(0.05)
                         
@@ -226,7 +235,7 @@ class monOverview:
                             i=0
                             while self.lcd.pressedKey == b"x0b":
                                 i+=1
-                                if i > 10 and i%2 == 0:
+                                if i > 6 and i%2 == 0:
                                     self.increment("program", "down")
                                 time.sleep(0.05)
                                 
@@ -237,7 +246,7 @@ class monOverview:
                             i=0
                             while self.lcd.pressedKey == b"x0b":
                                 i+=1
-                                if i > 10 and i%2 == 0:
+                                if i > 6 and i%2 == 0:
                                     self.currentChn = self.currentChn - 1 if self.currentChn > 0 else 15
                                     oldChn = self.currentChn
                                     self.updateAll()
@@ -254,55 +263,27 @@ class monOverview:
     def beginMon(self):
         self.th.start()
 
-class MidiMon:
-    th = None
-    def __init__(self, chnList, monitoring=False):
-        self.th = Thread(target=self.monitor)
+class MidiInHandler:
+    def __init__(self, midiOut, chnList):
+        self.midiOut = midiOut
         self.chnList = chnList
-        self.monitoring = monitoring
 
-    def monitor(self):
-        self.monitoring=True
-        eventCount=0
-        while self.monitoring:
-            msgBuffer=[]
-            initialMsg = midiin.get_message()
-            if initialMsg is not None:
-                msgBuffer.append(initialMsg)
-                while msgBuffer[-1] is not None:
-                    msgBuffer.append(midiin.get_message())
-                msgBuffer.pop()
-                #print(msgBuffer)
-                for msg in msgBuffer:
-                    eventCount+=1
-                    midiout.send_message(msg[0])
-                    #print(msg[0])
-                    if msg[0][0] >= 176 and msg[0][0] <= 207:
-                        msgChn=msg[0][0]%16
-                        if msg[0][0] >= 176 and msg[0][0] <= 191 and msg[0][1] == 0:
-                            self.chnList[msg[0][0]%16].bank = msg[0][2]
-                            #print(midiChannels[msg[0][0]%16].bank)
-                        if msg[0][0] >= 192 and msg[0][0] <= 207:
-                            self.chnList[msgChn].program = msg[0][1]
-                            self.chnList[msgChn].bankSet = self.chnList[msgChn].bank
-                            try:
-                                if msgChn != 9:
-                                    self.chnList[msgChn].programName = prgNamesMelo[str(self.chnList[msgChn].bankSet)][str(self.chnList[msgChn].program)]
-                                else:
-                                    self.chnList[msgChn].programName = prgNamesPerc[str(self.chnList[msgChn].bankSet)][str(self.chnList[msgChn].program)]
-                            except KeyError:
-                                self.chnList[msgChn].programName = "---"
-                msgBuffer.clear()
-                #print(eventCount)
-            else:
-                time.sleep(0.001)
+    def __call__(self, event, *args):
+        event, delta = event
+        self.midiOut.send_message(event)
+        status = event[0] & 0xF0
+        data1 = event[1]
+        ch = self.chnList[event[0] & 0xF]
 
-    def beginInput(self):
-        self.th.start()
-            
+        # set bank buffer when coarse bank select event (CC0) is received
+        if status == 176 and data1 == 0:
+            ch.bank = event[2]
 
-    def endInput():
-        midiMonitoring=False
+        # update program when program change event is received
+        if status == 192:
+            ch.program = data1
+            ch.bankSet = ch.bank
+            ch.updatePrgName()
 
 try:
     midiin.open_port(int(inDev))
@@ -316,28 +297,21 @@ midiout.send_message([0x99, 53, 112])
 time.sleep(0.125)
 midiout.send_message([0x89, 53, 0])
 
-midiChannels=[MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(False, 0,0,0,prgNamesPerc["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"]),
-              MidiChannel(True, 0,0,0,prgNamesMelo["0"]["0"])]
-
+# create midi channel objects that keep track of program and bank numbers
+midiChannels = []
+for c in range(16):
+    if c != 9:
+        midiChannels.append(MidiChannel(isMelodic=True))
+    else:
+        midiChannels.append(MidiChannel(isMelodic=False))
+    midiChannels[c].updatePrgName()
+    
+# connect to picoLCD via socket connection (requires USBLCDServer.exe be running)
 disp = picoLCD()
 disp.connect()
 
+# create objects for display/HID
 Overview=monOverview(midiChannels, disp)
-MidiFwd=MidiMon(midiChannels)
 
 # setup custom characters
 # U+00E9 ... e with acute
@@ -355,8 +329,11 @@ disp.send(b"set font 4 x06 x09 x1c x08 x1c x09 x06 x00")
 midiMonitoring=True
 chanMonitoring=True
 
-MidiMonThd=Thread(target=MidiFwd.beginInput)
-MidiMonThd.start()
+# set up midi handler
+handler = MidiInHandler(midiout, midiChannels)
+midiin.set_callback(handler)
+
+# initialize thread that handles display and input
 DispThd=Thread(target=Overview.beginMon)
 DispThd.start()
 
@@ -365,24 +342,3 @@ screen=0
 Overview.update()
 
 Overview.currentChn=0
-
-while True:
-    #if screen==0:
-        #if kbd.pressedKeys:
-            #if Overview.cursorPos == 2:
-                #Overview.cursorPos=0
-            #else:
-                #Overview.cursorPos+=1
-    time.sleep(0.1)
-        
-
-#Overview.currentChn=9
-
-#while True:
-#    if Overview.currentChn < 15:
-#        Overview.currentChn+=1
-#    else:
-#        Overview.currentChn=0
-#    time.sleep(0.5)
-
-#MidiMon.beginInput(midiChannels)
