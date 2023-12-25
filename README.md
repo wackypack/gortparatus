@@ -2,7 +2,7 @@
 Sound Blaster Live in a box
 
 ## Prerequisites
-- Windows XP
+- Computer with some flavor of NT 5.1 (e.g. Windows XP) and a Creative Soundfont Device (SB Live)
 - [Python 3.4.4](https://www.python.org/ftp/python/3.4.4/python-3.4.4.msi)
 - [MidiPlayer 6.1](http://web.archive.org/web/20220608030347/https://falcosoft.hu/midiplayer_61.zip) (to access patch names from loaded Soundfonts)
 - [pywin32 build 221](https://sourceforge.net/projects/pywin32/files/pywin32/Build%20221/pywin32-221.win-amd64-py3.4.exe/download) (to automaticaly retrieve patch names from MidiPlayer)
@@ -43,3 +43,7 @@ Sound Blaster Live in a box
 - gort.cfg - config file that specifies midi in/out devices.
 - program_names_melodic.json - list of melodic program names dumped from MidiPlayer
 - program_names_pecussion.json - list of percussion names dumped from MidiPlayer
+- __extras/__ - media created for the author's specific use case
+- __extras/artwork/__ - custom splash
+- __extras/patch-listings/__ - pages containing all programs used on the author's synth
+- __support/__ gortparatus.ins - Cakewalk instrument list for the author's synth
