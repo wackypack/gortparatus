@@ -79,8 +79,8 @@ class monOverview:
 
     def cgramify(self, in_str):
         # replace specific Unicode characters with picoLCD CGRAM references.
-        # éóøú€
-        return in_str.replace("é", "\\0").replace("ó", "\\1").replace("ø", "\\2").replace("ú", "\\3").replace("€", "\\4")
+        # éóøú€¼½¾
+        return in_str.replace("é", "\\0").replace("ó", "\\1").replace("ø", "\\2").replace("ú", "\\3").replace("€", "\\4").replace("¼","\\5").replace("½","\\6").replace("¾","\\7").replace("ˆ","^").replace("º","o")
 
     def update(self):
         # Don't use this, stopped using spit because it was resulting in hangs.
@@ -324,6 +324,12 @@ disp.send(b"set font 2 x00 x00 x0f x13 x15 x19 x1e x00")
 disp.send(b"set font 3 x02 x04 x11 x11 x11 x13 x0d x00")
 # U+20AC ... euro
 disp.send(b"set font 4 x06 x09 x1c x08 x1c x09 x06 x00")
+# U+00BC ... 1/4
+disp.send(b"set font 5 x10 x11 x12 x04 x09 x12 x07 x01")
+# U+00BD ... 1/2
+disp.send(b"set font 6 x10 x11 x12 x04 x0a x11 x02 x07")
+# U+00BE ... 3/4
+disp.send(b"set font 7 x18 x0c x0d x1a x05 x0a x17 x01")
 
 
 midiMonitoring=True
